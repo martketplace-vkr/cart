@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package github.com.martketplace.vkr.cart.pkg.api.grpc.v1.client;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/martketplace-vkr/cart/pkg/api/grpc/v1/client;client";
+
+service CartClientService {
+  rpc GetCart(GetCartRequest) returns (GetCartResponse);
+  rpc AddItem(AddItemRequest) returns (AddItemResponse);
+  rpc UpdateItemQuantity(UpdateItemQuantityRequest) returns (UpdateItemQuantityResponse);
+  rpc RemoveItem(RemoveItemRequest) returns (RemoveItemResponse);
+  rpc ClearCart(ClearCartRequest) returns (ClearCartResponse);
+}
+
+message Cart {
+  int64 id = 1;
+  int64 user_id = 2;
+  repeated CartItem items = 3;
+  CartTotals totals = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message CartItem {
+  int64 product_id = 1;
+  int64 vendor_id = 2;
+  string vendor_name = 3;
+  string product_name = 4;
+  string image_url = 5;
+  uint32 quantity = 6;
+  uint32 available_quantity = 7;
+  bool available = 8;
+  bool selected = 9;
+  string unit_price = 10;
+  string total_price = 11;
+}
+
+message CartTotals {
+  uint32 total_items = 1;
+  string subtotal = 2;
+  string discount = 3;
+  string total = 4;
+}
+
+message GetCartRequest {
+  int64 user_id = 1;
+}
+
+message GetCartResponse {
+  Cart cart = 1;
+}
+
+message AddItemRequest {
+  int64 user_id = 1;
+  int64 product_id = 2;
+  int64 vendor_id = 3;
+  uint32 quantity = 4;
+}
+
+message AddItemResponse {
+  Cart cart = 1;
+}
+
+message UpdateItemQuantityRequest {
+  int64 user_id = 1;
+  int64 product_id = 2;
+  uint32 quantity = 3;
+}
+
+message UpdateItemQuantityResponse {
+  Cart cart = 1;
+}
+
+message RemoveItemRequest {
+  int64 user_id = 1;
+  int64 product_id = 2;
+}
+
+message RemoveItemResponse {
+  Cart cart = 1;
+}
+
+message ClearCartRequest {
+  int64 user_id = 1;
+}
+
+message ClearCartResponse {
+  Cart cart = 1;
+}
