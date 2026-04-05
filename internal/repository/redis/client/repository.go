@@ -2,13 +2,13 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
-	api "github.com/martketplace-vkr/cart/pkg/api/grpc/v1/client"
+	"github.com/martketplace-vkr/cart/domain"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 const (
@@ -17,17 +17,17 @@ const (
 	txRetryLimit           = 5
 )
 
-type repository struct {
+type Repository struct {
 	redis *redis.Client
 }
 
-func New(redisClient *redis.Client) *repository {
-	return &repository{
+func New(redisClient *redis.Client) *Repository {
+	return &Repository{
 		redis: redisClient,
 	}
 }
 
-func (r *repository) GetCart(ctx context.Context, userID int64) (*api.Cart, error) {
+func (r *Repository) GetCart(ctx context.Context, userID int64) (*domain.Cart, error) {
 	payload, err := r.redis.Get(ctx, cartKey(userID)).Result()
 	if err != nil {
 		if err == redis.Nil {
@@ -37,15 +37,15 @@ func (r *repository) GetCart(ctx context.Context, userID int64) (*api.Cart, erro
 		return nil, status.Errorf(codes.Internal, "get cart from redis: %v", err)
 	}
 
-	cart := &api.Cart{}
-	if err := protojson.Unmarshal([]byte(payload), cart); err != nil {
+	cart := &domain.Cart{}
+	if err := json.Unmarshal([]byte(payload), cart); err != nil {
 		return nil, status.Errorf(codes.Internal, "unmarshal cart from redis: %v", err)
 	}
 
 	return cart, nil
 }
 
-func (r *repository) HasActiveCheckout(ctx context.Context, userID int64) (bool, error) {
+func (r *Repository) HasActiveCheckout(ctx context.Context, userID int64) (bool, error) {
 	_, err := r.redis.Get(ctx, checkoutLockKey(userID)).Result()
 	if err == nil {
 		return true, nil
@@ -57,14 +57,14 @@ func (r *repository) HasActiveCheckout(ctx context.Context, userID int64) (bool,
 	return false, status.Errorf(codes.Internal, "get checkout lock from redis: %v", err)
 }
 
-func (r *repository) SaveCart(ctx context.Context, cart *api.Cart) error {
-	payload, err := protojson.Marshal(cart)
+func (r *Repository) SaveCart(ctx context.Context, cart *domain.Cart) error {
+	payload, err := json.Marshal(cart)
 	if err != nil {
 		return status.Errorf(codes.Internal, "marshal cart for redis: %v", err)
 	}
 
-	if err := r.withCheckoutGuard(ctx, cart.GetUserId(), func(pipe redis.Pipeliner) error {
-		pipe.Set(ctx, cartKey(cart.GetUserId()), payload, 0)
+	if err := r.withCheckoutGuard(ctx, cart.UserId, func(pipe redis.Pipeliner) error {
+		pipe.Set(ctx, cartKey(cart.UserId), payload, 0)
 
 		return nil
 	}); err != nil {
@@ -74,7 +74,7 @@ func (r *repository) SaveCart(ctx context.Context, cart *api.Cart) error {
 	return nil
 }
 
-func (r *repository) DeleteCart(ctx context.Context, userID int64) error {
+func (r *Repository) DeleteCart(ctx context.Context, userID int64) error {
 	if err := r.withCheckoutGuard(ctx, userID, func(pipe redis.Pipeliner) error {
 		pipe.Del(ctx, cartKey(userID))
 
@@ -94,7 +94,7 @@ func checkoutLockKey(userID int64) string {
 	return fmt.Sprintf(checkoutLockKeyPattern, userID)
 }
 
-func (r *repository) withCheckoutGuard(
+func (r *Repository) withCheckoutGuard(
 	ctx context.Context,
 	userID int64,
 	fn func(pipe redis.Pipeliner) error,

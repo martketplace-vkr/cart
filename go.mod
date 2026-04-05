@@ -7,6 +7,8 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/martketplace-vkr/pkg v0.0.1
 	github.com/redis/go-redis/v9 v9.18.0
+	github.com/shopspring/decimal v1.2.0
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.67.0
 	google.golang.org/grpc v1.79.2
 	google.golang.org/protobuf v1.36.11
 )
@@ -84,7 +86,6 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.69.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.67.0 // indirect
 	go.opentelemetry.io/otel v1.42.0 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.17.0 // indirect
 	go.opentelemetry.io/otel/metric v1.42.0 // indirect

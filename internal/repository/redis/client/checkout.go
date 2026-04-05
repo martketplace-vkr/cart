@@ -24,7 +24,7 @@ const (
 	checkoutReservationTTL        = 5 * time.Minute
 )
 
-func (r *repository) ReserveCheckoutItems(
+func (r *Repository) ReserveCheckoutItems(
 	ctx context.Context,
 	userID int64,
 	checkoutID string,
@@ -106,7 +106,7 @@ func (r *repository) ReserveCheckoutItems(
 	return nil, status.Error(codes.Aborted, "concurrent cart update, please retry")
 }
 
-func (r *repository) GetCheckoutReservation(
+func (r *Repository) GetCheckoutReservation(
 	ctx context.Context,
 	userID int64,
 	checkoutID string,
@@ -122,7 +122,7 @@ func (r *repository) GetCheckoutReservation(
 	return reservation, nil
 }
 
-func (r *repository) CommitCheckout(
+func (r *Repository) CommitCheckout(
 	ctx context.Context,
 	userID int64,
 	checkoutID string,
@@ -219,7 +219,7 @@ func (r *repository) CommitCheckout(
 	return nil, status.Error(codes.Aborted, "concurrent cart update, please retry")
 }
 
-func (r *repository) ReleaseCheckout(
+func (r *Repository) ReleaseCheckout(
 	ctx context.Context,
 	userID int64,
 	checkoutID string,

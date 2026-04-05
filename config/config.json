@@ -1,4 +1,25 @@
 {
-  "Grpc": {},
-  "Redis": {}
+	"Redis": {
+		"DB": 0,
+		"Host": "149.154.71.185",
+		"InsecureSkipVerify": false,
+		"MinIdleConns": 10,
+		"PoolSize": 10,
+		"PoolTimeout": 10,
+		"Port": "6379",
+		"UseCertificates": false,
+    "Password": "hv5m9)LBLd5LuZ?ARm^."
+	},
+	"Grpc": {
+		"Host": "0.0.0.0:5000",
+		"StartTimeout": 10000000000,
+		"MaxConnectionAge": 100,
+		"MaxConnectionIdle": 100,
+		"MaxRecvMsgSize": 50000,
+		"MaxSendMsgSize": 50000,
+		"RequestTimeout": 100,
+		"ServiceName": "cart",
+		"Time": 100,
+		"Timeout": 5000
+	}
 }
