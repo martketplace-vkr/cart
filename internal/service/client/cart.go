@@ -5,6 +5,7 @@ import (
 	"slices"
 
 	"github.com/martketplace-vkr/cart/domain"
+	"github.com/martketplace-vkr/pkg/logger/log"
 	"github.com/shopspring/decimal"
 
 	api "github.com/martketplace-vkr/cart/pkg/api/grpc/v1/client"
@@ -20,6 +21,11 @@ func (s *Service) GetCart(ctx context.Context, request *api.GetCartRequest) (car
 
 	if cart == nil {
 		cart = domain.EmptyCart(request.GetUserId())
+	} else {
+		err = s.catalog.EnrichCartItemByProductInfo(ctx, cart.Items)
+		if err != nil {
+			log.Errorf("failed enrich cart item (user: %d): %s",request.UserId,  err)
+		}
 	}
 
 	cart.Recalculate()
