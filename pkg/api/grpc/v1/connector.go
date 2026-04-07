@@ -6,6 +6,7 @@ import (
 
 	"github.com/martketplace-vkr/cart/pkg/api/grpc/v1/admin"
 	"github.com/martketplace-vkr/cart/pkg/api/grpc/v1/client"
+	"github.com/martketplace-vkr/cart/pkg/api/grpc/v1/order"
 
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
@@ -17,19 +18,20 @@ const (
 	cmpName = "CatalogClientGrpc"
 )
 
-type CartClient struct {
+type Connector struct {
 	Admin  admin.CartAdminServiceClient
 	Client client.CartClientServiceClient
+	Order  order.CartOrderServiceClient
 
 	conn *grpc.ClientConn
 	cfg  Config
 }
 
-func New(cfg Config) *CartClient {
-	return &CartClient{cfg: cfg}
+func New(cfg Config) *Connector {
+	return &Connector{cfg: cfg}
 }
 
-func (c *CartClient) Start(ctx context.Context) (err error) {
+func (c *Connector) Start(ctx context.Context) (err error) {
 	if c.cfg.DontRun {
 		return nil
 	}
@@ -63,11 +65,12 @@ func (c *CartClient) Start(ctx context.Context) (err error) {
 
 	c.Client = client.NewCartClientServiceClient(c.conn)
 	c.Admin = admin.NewCartAdminServiceClient(c.conn)
+	c.Order = order.NewCartOrderServiceClient(c.conn)
 
 	return nil
 }
 
-func (c *CartClient) Stop(_ context.Context) error {
+func (c *Connector) Stop(_ context.Context) error {
 	if c.conn == nil {
 		return nil
 	}
@@ -75,18 +78,18 @@ func (c *CartClient) Stop(_ context.Context) error {
 	return c.conn.Close()
 }
 
-func (c *CartClient) GetStartTimeout() time.Duration {
+func (c *Connector) GetStartTimeout() time.Duration {
 	return c.cfg.StartTimeout.Duration
 }
 
-func (c *CartClient) GetStopTimeout() time.Duration {
+func (c *Connector) GetStopTimeout() time.Duration {
 	return c.cfg.StopTimeout.Duration
 }
 
-func (c *CartClient) GetShutdownDelay() time.Duration {
+func (c *Connector) GetShutdownDelay() time.Duration {
 	return c.cfg.ShutdownDelay.Duration
 }
 
-func (c *CartClient) GetName() string {
+func (c *Connector) GetName() string {
 	return cmpName
 }
