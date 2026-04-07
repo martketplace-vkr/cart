@@ -10,8 +10,9 @@ type Service struct {
 	catalog    *catalog.Client
 }
 
-func New(repository *rd.Repository) *Service {
+func New(repository *rd.Repository, catalogClient *catalog.Client) *Service {
 	return &Service{
 		repository: repository,
+		catalog:    catalogClient,
 	}
 }

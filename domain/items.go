@@ -40,17 +40,20 @@ func (i *CartItem) ToProto() *client.CartItem {
 }
 
 func (i *CartItem) EnrichByProduct(product *catalogdomain.Product) (err error) {
-	index := slices.IndexFunc(product.Images, func(image *catalogdomain.ProductImage) bool {
-		return image.IsMain
-	})
-
-	if len(product.Images) > 0 {
-		i.ImageUrl = product.Images[index].GetUrl()
+	images := product.GetImages()
+	if len(images) > 0 {
+		index := slices.IndexFunc(images, func(image *catalogdomain.ProductImage) bool {
+			return image.GetIsMain()
+		})
+		if index < 0 {
+			index = 0
+		}
+		i.ImageUrl = images[index].GetUrl()
 	}
 
-	i.ProductName = product.Name
+	i.ProductName = product.GetName()
 	i.AvailableQuantity = product.GetStockCount()
-	i.UnitPrice, err = decimal.NewFromString(product.Price)
+	i.UnitPrice, err = decimal.NewFromString(product.GetPrice())
 	if err != nil {
 		return err
 	}
@@ -65,8 +68,8 @@ type CartItemList []CartItem
 func (l *CartItemList) ToProto() []*client.CartItem {
 	protoList := make([]*client.CartItem, 0, len(*l))
 
-	for _, domainItem := range l.ToProto() {
-		protoList = append(protoList, domainItem)
+	for _, domainItem := range *l {
+		protoList = append(protoList, domainItem.ToProto())
 	}
 
 	return protoList

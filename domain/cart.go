@@ -35,9 +35,12 @@ func (c *Cart) ToProto() *client.Cart {
 }
 
 func (c *Cart) Recalculate() {
-	if c.Totals == nil {
-		c.Totals = ZeroTotals()
+	discount := decimal.Zero
+	if c.Totals != nil {
+		discount = c.Totals.Discount
 	}
+	c.Totals = ZeroTotals()
+	c.Totals.Discount = discount
 
 	if c.Items == nil {
 		c.Items = CartItemList{}
@@ -53,6 +56,8 @@ func (c *Cart) Recalculate() {
 
 		c.Items[idx] = item
 	}
+
+	c.Totals.Total = c.Totals.Subtotal.Sub(c.Totals.Discount)
 }
 
 func (c *Cart) PrepareForSave() {
