@@ -24,7 +24,7 @@ func (s *Service) GetCart(ctx context.Context, request *api.GetCartRequest) (car
 	} else {
 		err = s.catalog.EnrichCartItemByProductInfo(ctx, cart.Items)
 		if err != nil {
-			log.Errorf("failed enrich cart item (user: %d): %s",request.UserId,  err)
+			log.Errorf("failed enrich cart item (user: %d): %s", request.UserId, err)
 		}
 	}
 
@@ -69,6 +69,10 @@ func (s *Service) AddItem(ctx context.Context, request *api.AddItemRequest) (*do
 		})
 	}
 
+	if err := s.catalog.EnrichCartItemByProductInfo(ctx, cart.Items); err != nil {
+		return nil, err
+	}
+
 	cart.PrepareForSave()
 	if err := s.repository.SaveCart(ctx, cart); err != nil {
 		return nil, err
@@ -102,6 +106,10 @@ func (s *Service) UpdateItemQuantity(ctx context.Context, request *api.UpdateIte
 	cart.Items[index].Quantity = request.GetQuantity()
 	if cart.Items[index].AvailableQuantity < request.GetQuantity() {
 		cart.Items[index].AvailableQuantity = request.GetQuantity()
+	}
+
+	if err := s.catalog.EnrichCartItemByProductInfo(ctx, cart.Items); err != nil {
+		return nil, err
 	}
 
 	cart.PrepareForSave()
