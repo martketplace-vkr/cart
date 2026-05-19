@@ -37,8 +37,8 @@ func (r *Repository) GetCart(ctx context.Context, userID int64) (*domain.Cart, e
 		return nil, status.Errorf(codes.Internal, "get cart from redis: %v", err)
 	}
 
-	cart := &domain.Cart{}
-	if err := json.Unmarshal([]byte(payload), cart); err != nil {
+	cart, err := unmarshalDomainCartPayload(payload)
+	if err != nil {
 		return nil, status.Errorf(codes.Internal, "unmarshal cart from redis: %v", err)
 	}
 
@@ -58,7 +58,7 @@ func (r *Repository) HasActiveCheckout(ctx context.Context, userID int64) (bool,
 }
 
 func (r *Repository) SaveCart(ctx context.Context, cart *domain.Cart) error {
-	payload, err := json.Marshal(cart)
+	payload, err := json.Marshal(normalizeDomainCart(cart))
 	if err != nil {
 		return status.Errorf(codes.Internal, "marshal cart for redis: %v", err)
 	}

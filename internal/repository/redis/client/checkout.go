@@ -173,7 +173,7 @@ func (r *Repository) CommitCheckout(
 						return err
 					}
 
-					cartPayload, err = protojson.Marshal(cart)
+					cartPayload, err = marshalProtoCartPayload(cart)
 					if err != nil {
 						return status.Errorf(codes.Internal, "marshal cart for redis: %v", err)
 					}
@@ -541,8 +541,8 @@ func getCartTx(ctx context.Context, tx *redis.Tx, key string) (*clientapi.Cart, 
 		return nil, status.Errorf(codes.Internal, "get cart from redis: %v", err)
 	}
 
-	cart := &clientapi.Cart{}
-	if err := protojson.Unmarshal([]byte(payload), cart); err != nil {
+	cart, err := unmarshalProtoCartPayload(payload)
+	if err != nil {
 		return nil, status.Errorf(codes.Internal, "unmarshal cart from redis: %v", err)
 	}
 
