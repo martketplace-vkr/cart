@@ -265,6 +265,8 @@ github.com/martketplace-vkr/catalog v1.0.0-rc003 h1:VJxwLwqpSEZfVERVtxOB02ildh8U
 github.com/martketplace-vkr/catalog v1.0.0-rc003/go.mod h1:ScX5buNdWAJaiIAlYSyvnhhAIywnQAfehgHKZxUkIn8=
 github.com/martketplace-vkr/catalog v1.0.0-rc004 h1:GZIfPFgVr9Hw4c8KkTDs3QC7pNoOcNBirc98xVxGsZk=
 github.com/martketplace-vkr/catalog v1.0.0-rc004/go.mod h1:ScX5buNdWAJaiIAlYSyvnhhAIywnQAfehgHKZxUkIn8=
+github.com/martketplace-vkr/catalog v1.0.0-rc005.0.20260601084541-2e27ff7e2462 h1:9RolQMwJHlvom2C74zXZ5C3LamvwoYkox5Wo1aUgddA=
+github.com/martketplace-vkr/catalog v1.0.0-rc005.0.20260601084541-2e27ff7e2462/go.mod h1:ScX5buNdWAJaiIAlYSyvnhhAIywnQAfehgHKZxUkIn8=
 github.com/martketplace-vkr/pkg v0.0.1 h1:DW+CwmXmXzwDE2yj9vQBMRaEQRHcUvf1VaJcqIc4Ewc=
 github.com/martketplace-vkr/pkg v0.0.1/go.mod h1:L3zsndZXrjEj5zSoYecSAyswehEuCtmgtsTXRXzCSBE=
 github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=

@@ -22,6 +22,7 @@ func (r *repositoryStub) ReserveCheckoutItems(
 	_ string,
 	_ []int64,
 	_ uint64,
+	_ int64,
 ) (*orderapi.CheckoutReservation, error) {
 	return r.reservation, nil
 }

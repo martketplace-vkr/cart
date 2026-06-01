@@ -119,6 +119,11 @@ type CartItem struct {
 	Selected          bool                   `protobuf:"varint,9,opt,name=selected,proto3" json:"selected,omitempty"`
 	UnitPrice         string                 `protobuf:"bytes,10,opt,name=unit_price,json=unitPrice,proto3" json:"unit_price,omitempty"`
 	TotalPrice        string                 `protobuf:"bytes,11,opt,name=total_price,json=totalPrice,proto3" json:"total_price,omitempty"`
+	CurrencyId        int64                  `protobuf:"varint,12,opt,name=currency_id,json=currencyId,proto3" json:"currency_id,omitempty"`
+	RubPrice          string                 `protobuf:"bytes,13,opt,name=rub_price,json=rubPrice,proto3" json:"rub_price,omitempty"`
+	UsdtPrice         string                 `protobuf:"bytes,14,opt,name=usdt_price,json=usdtPrice,proto3" json:"usdt_price,omitempty"`
+	RubPerUsdt        string                 `protobuf:"bytes,15,opt,name=rub_per_usdt,json=rubPerUsdt,proto3" json:"rub_per_usdt,omitempty"`
+	AcceptsCrypto     bool                   `protobuf:"varint,16,opt,name=accepts_crypto,json=acceptsCrypto,proto3" json:"accepts_crypto,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -228,6 +233,41 @@ func (x *CartItem) GetTotalPrice() string {
 		return x.TotalPrice
 	}
 	return ""
+}
+
+func (x *CartItem) GetCurrencyId() int64 {
+	if x != nil {
+		return x.CurrencyId
+	}
+	return 0
+}
+
+func (x *CartItem) GetRubPrice() string {
+	if x != nil {
+		return x.RubPrice
+	}
+	return ""
+}
+
+func (x *CartItem) GetUsdtPrice() string {
+	if x != nil {
+		return x.UsdtPrice
+	}
+	return ""
+}
+
+func (x *CartItem) GetRubPerUsdt() string {
+	if x != nil {
+		return x.RubPerUsdt
+	}
+	return ""
+}
+
+func (x *CartItem) GetAcceptsCrypto() bool {
+	if x != nil {
+		return x.AcceptsCrypto
+	}
+	return false
 }
 
 type CartTotals struct {
@@ -799,7 +839,7 @@ const file_v1_client_cart_client_service_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xec\x02\n" +
+	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x92\x04\n" +
 	"\bCartItem\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x01 \x01(\x03R\tproductId\x12\x1b\n" +
@@ -816,7 +856,15 @@ const file_v1_client_cart_client_service_proto_rawDesc = "" +
 	"unit_price\x18\n" +
 	" \x01(\tR\tunitPrice\x12\x1f\n" +
 	"\vtotal_price\x18\v \x01(\tR\n" +
-	"totalPrice\"{\n" +
+	"totalPrice\x12\x1f\n" +
+	"\vcurrency_id\x18\f \x01(\x03R\n" +
+	"currencyId\x12\x1b\n" +
+	"\trub_price\x18\r \x01(\tR\brubPrice\x12\x1d\n" +
+	"\n" +
+	"usdt_price\x18\x0e \x01(\tR\tusdtPrice\x12 \n" +
+	"\frub_per_usdt\x18\x0f \x01(\tR\n" +
+	"rubPerUsdt\x12%\n" +
+	"\x0eaccepts_crypto\x18\x10 \x01(\bR\racceptsCrypto\"{\n" +
 	"\n" +
 	"CartTotals\x12\x1f\n" +
 	"\vtotal_items\x18\x01 \x01(\rR\n" +

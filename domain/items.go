@@ -5,6 +5,7 @@ import (
 
 	"github.com/martketplace-vkr/cart/pkg/api/grpc/v1/client"
 	catalogdomain "github.com/martketplace-vkr/catalog/pkg/api/grpc/v1/domain"
+	"github.com/martketplace-vkr/pkg/utils/currency"
 
 	"github.com/shopspring/decimal"
 )
@@ -19,8 +20,13 @@ type CartItem struct {
 	AvailableQuantity uint32
 	Available         bool
 	Selected          bool
+	CurrencyID        int64
 	UnitPrice         decimal.Decimal
 	TotalPrice        decimal.Decimal
+	RubPrice          decimal.Decimal
+	USDTPrice         decimal.Decimal
+	RubPerUSDT        decimal.Decimal
+	AcceptsCrypto     bool
 }
 
 func (i *CartItem) ToProto() *client.CartItem {
@@ -34,8 +40,13 @@ func (i *CartItem) ToProto() *client.CartItem {
 		AvailableQuantity: i.AvailableQuantity,
 		Available:         i.Available,
 		Selected:          i.Selected,
+		CurrencyId:        i.CurrencyID,
 		UnitPrice:         i.UnitPrice.String(),
 		TotalPrice:        i.TotalPrice.String(),
+		RubPrice:          i.RubPrice.String(),
+		UsdtPrice:         i.USDTPrice.String(),
+		RubPerUsdt:        i.RubPerUSDT.String(),
+		AcceptsCrypto:     i.AcceptsCrypto,
 	}
 }
 
@@ -53,11 +64,23 @@ func (i *CartItem) EnrichByProduct(product *catalogdomain.Product) (err error) {
 
 	i.ProductName = product.GetName()
 	i.AvailableQuantity = product.GetStockCount()
-	i.UnitPrice, err = decimal.NewFromString(product.GetPrice())
+	i.RubPrice, err = decimal.NewFromString(product.GetPrice())
 	if err != nil {
 		return err
 	}
 
+	i.AcceptsCrypto = product.GetAcceptsCrypto()
+	i.USDTPrice = decimal.Zero
+	if product.GetEffectiveUsdtPrice() != "" {
+		i.USDTPrice, _ = decimal.NewFromString(product.GetEffectiveUsdtPrice())
+	}
+	i.RubPerUSDT = decimal.Zero
+	if product.GetRubPerUsdt() != "" {
+		i.RubPerUSDT, _ = decimal.NewFromString(product.GetRubPerUsdt())
+	}
+
+	i.CurrencyID = int64(currency.RUB)
+	i.UnitPrice = i.RubPrice
 	i.TotalPrice = i.UnitPrice.Mul(decimal.NewFromInt(int64(i.Quantity)))
 
 	return nil

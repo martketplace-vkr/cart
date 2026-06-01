@@ -11,6 +11,7 @@ import (
 
 	clientapi "github.com/martketplace-vkr/cart/pkg/api/grpc/v1/client"
 	orderapi "github.com/martketplace-vkr/cart/pkg/api/grpc/v1/order"
+	"github.com/martketplace-vkr/pkg/utils/currency"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -30,6 +31,7 @@ func (r *Repository) ReserveCheckoutItems(
 	checkoutID string,
 	productIDs []int64,
 	expectedCartVersion uint64,
+	preferredCurrencyID int64,
 ) (*orderapi.CheckoutReservation, error) {
 	lockKey := checkoutLockKey(userID)
 	reservationKey := checkoutReservationKey(userID, checkoutID)
@@ -71,7 +73,7 @@ func (r *Repository) ReserveCheckoutItems(
 				return status.Error(codes.Aborted, "cart version mismatch")
 			}
 
-			reservation, err = buildReservation(cart, userID, checkoutID, productIDs, currentVersion)
+			reservation, err = buildReservation(cart, userID, checkoutID, productIDs, currentVersion, preferredCurrencyID)
 			if err != nil {
 				return err
 			}
@@ -296,6 +298,7 @@ func buildReservation(
 	checkoutID string,
 	productIDs []int64,
 	cartVersion uint64,
+	preferredCurrencyID int64,
 ) (*orderapi.CheckoutReservation, error) {
 	requested := make(map[int64]struct{}, len(productIDs))
 	for _, productID := range productIDs {
@@ -321,9 +324,10 @@ func buildReservation(
 			return nil, status.Errorf(codes.FailedPrecondition, "product %d exceeds available quantity", item.GetProductId())
 		}
 
-		totalPrice := item.GetTotalPrice()
-		if totalPrice == "" {
-			totalPrice = multiplyDecimalString(item.GetUnitPrice(), item.GetQuantity())
+		currencyID, unitPrice := checkoutCurrencyAndUnitPrice(item, preferredCurrencyID)
+		totalPrice := multiplyDecimalString(unitPrice, item.GetQuantity())
+		if currencyID == int64(currency.RUB) && item.GetTotalPrice() != "" {
+			totalPrice = item.GetTotalPrice()
 		}
 
 		items = append(items, &orderapi.CheckoutCartItem{
@@ -333,8 +337,12 @@ func buildReservation(
 			ProductName: item.GetProductName(),
 			ImageUrl:    item.GetImageUrl(),
 			Quantity:    item.GetQuantity(),
-			UnitPrice:   normalizeDecimalString(item.GetUnitPrice()),
+			UnitPrice:   normalizeDecimalString(unitPrice),
 			TotalPrice:  totalPrice,
+			CurrencyId:  currencyID,
+			RubPrice:    normalizeDecimalString(item.GetRubPrice()),
+			UsdtPrice:   normalizeDecimalString(item.GetUsdtPrice()),
+			RubPerUsdt:  normalizeDecimalString(item.GetRubPerUsdt()),
 		})
 		found[item.GetProductId()] = struct{}{}
 	}
@@ -377,6 +385,19 @@ func buildReservationTotals(items []*orderapi.CheckoutCartItem) *orderapi.Checko
 		Discount:   "0",
 		Total:      decimalToString(subtotal),
 	}
+}
+
+func checkoutCurrencyAndUnitPrice(item *clientapi.CartItem, preferredCurrencyID int64) (int64, string) {
+	if preferredCurrencyID == int64(currency.USDTinTRC) && item.GetAcceptsCrypto() && parseDecimal(item.GetUsdtPrice()).Sign() > 0 {
+		return int64(currency.USDTinTRC), item.GetUsdtPrice()
+	}
+
+	price := item.GetRubPrice()
+	if price == "" || parseDecimal(price).Sign() == 0 {
+		price = item.GetUnitPrice()
+	}
+
+	return int64(currency.RUB), price
 }
 
 func reservationProductIDs(reservation *orderapi.CheckoutReservation) []int64 {

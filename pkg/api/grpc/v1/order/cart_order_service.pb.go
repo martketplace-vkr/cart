@@ -124,6 +124,10 @@ type CheckoutCartItem struct {
 	Quantity      uint32                 `protobuf:"varint,6,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	UnitPrice     string                 `protobuf:"bytes,7,opt,name=unit_price,json=unitPrice,proto3" json:"unit_price,omitempty"`
 	TotalPrice    string                 `protobuf:"bytes,8,opt,name=total_price,json=totalPrice,proto3" json:"total_price,omitempty"`
+	CurrencyId    int64                  `protobuf:"varint,9,opt,name=currency_id,json=currencyId,proto3" json:"currency_id,omitempty"`
+	RubPrice      string                 `protobuf:"bytes,10,opt,name=rub_price,json=rubPrice,proto3" json:"rub_price,omitempty"`
+	UsdtPrice     string                 `protobuf:"bytes,11,opt,name=usdt_price,json=usdtPrice,proto3" json:"usdt_price,omitempty"`
+	RubPerUsdt    string                 `protobuf:"bytes,12,opt,name=rub_per_usdt,json=rubPerUsdt,proto3" json:"rub_per_usdt,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -214,6 +218,34 @@ func (x *CheckoutCartItem) GetTotalPrice() string {
 	return ""
 }
 
+func (x *CheckoutCartItem) GetCurrencyId() int64 {
+	if x != nil {
+		return x.CurrencyId
+	}
+	return 0
+}
+
+func (x *CheckoutCartItem) GetRubPrice() string {
+	if x != nil {
+		return x.RubPrice
+	}
+	return ""
+}
+
+func (x *CheckoutCartItem) GetUsdtPrice() string {
+	if x != nil {
+		return x.UsdtPrice
+	}
+	return ""
+}
+
+func (x *CheckoutCartItem) GetRubPerUsdt() string {
+	if x != nil {
+		return x.RubPerUsdt
+	}
+	return ""
+}
+
 type CheckoutCartTotals struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	TotalItems    uint32                 `protobuf:"varint,1,opt,name=total_items,json=totalItems,proto3" json:"total_items,omitempty"`
@@ -288,6 +320,7 @@ type ReserveCheckoutItemsRequest struct {
 	CheckoutId          string                 `protobuf:"bytes,2,opt,name=checkout_id,json=checkoutId,proto3" json:"checkout_id,omitempty"`
 	ProductIds          []int64                `protobuf:"varint,3,rep,packed,name=product_ids,json=productIds,proto3" json:"product_ids,omitempty"`
 	ExpectedCartVersion uint64                 `protobuf:"varint,4,opt,name=expected_cart_version,json=expectedCartVersion,proto3" json:"expected_cart_version,omitempty"`
+	PreferredCurrencyId int64                  `protobuf:"varint,5,opt,name=preferred_currency_id,json=preferredCurrencyId,proto3" json:"preferred_currency_id,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -346,6 +379,13 @@ func (x *ReserveCheckoutItemsRequest) GetProductIds() []int64 {
 func (x *ReserveCheckoutItemsRequest) GetExpectedCartVersion() uint64 {
 	if x != nil {
 		return x.ExpectedCartVersion
+	}
+	return 0
+}
+
+func (x *ReserveCheckoutItemsRequest) GetPreferredCurrencyId() int64 {
+	if x != nil {
+		return x.PreferredCurrencyId
 	}
 	return 0
 }
@@ -768,7 +808,7 @@ const file_v1_order_cart_order_service_proto_rawDesc = "" +
 	"\fcart_version\x18\x05 \x01(\x04R\vcartVersion\x12A\n" +
 	"\x0ereserved_until\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\rreservedUntil\x129\n" +
 	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\x8b\x02\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\x8a\x03\n" +
 	"\x10CheckoutCartItem\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x01 \x01(\x03R\tproductId\x12\x1b\n" +
@@ -781,20 +821,29 @@ const file_v1_order_cart_order_service_proto_rawDesc = "" +
 	"\n" +
 	"unit_price\x18\a \x01(\tR\tunitPrice\x12\x1f\n" +
 	"\vtotal_price\x18\b \x01(\tR\n" +
-	"totalPrice\"\x83\x01\n" +
+	"totalPrice\x12\x1f\n" +
+	"\vcurrency_id\x18\t \x01(\x03R\n" +
+	"currencyId\x12\x1b\n" +
+	"\trub_price\x18\n" +
+	" \x01(\tR\brubPrice\x12\x1d\n" +
+	"\n" +
+	"usdt_price\x18\v \x01(\tR\tusdtPrice\x12 \n" +
+	"\frub_per_usdt\x18\f \x01(\tR\n" +
+	"rubPerUsdt\"\x83\x01\n" +
 	"\x12CheckoutCartTotals\x12\x1f\n" +
 	"\vtotal_items\x18\x01 \x01(\rR\n" +
 	"totalItems\x12\x1a\n" +
 	"\bsubtotal\x18\x02 \x01(\tR\bsubtotal\x12\x1a\n" +
 	"\bdiscount\x18\x03 \x01(\tR\bdiscount\x12\x14\n" +
-	"\x05total\x18\x04 \x01(\tR\x05total\"\xac\x01\n" +
+	"\x05total\x18\x04 \x01(\tR\x05total\"\xe0\x01\n" +
 	"\x1bReserveCheckoutItemsRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1f\n" +
 	"\vcheckout_id\x18\x02 \x01(\tR\n" +
 	"checkoutId\x12\x1f\n" +
 	"\vproduct_ids\x18\x03 \x03(\x03R\n" +
 	"productIds\x122\n" +
-	"\x15expected_cart_version\x18\x04 \x01(\x04R\x13expectedCartVersion\"\x8d\x01\n" +
+	"\x15expected_cart_version\x18\x04 \x01(\x04R\x13expectedCartVersion\x122\n" +
+	"\x15preferred_currency_id\x18\x05 \x01(\x03R\x13preferredCurrencyId\"\x8d\x01\n" +
 	"\x1cReserveCheckoutItemsResponse\x12m\n" +
 	"\vreservation\x18\x01 \x01(\v2K.github.com.martketplace.vkr.cart.pkg.api.grpc.v1.order.CheckoutReservationR\vreservation\"Y\n" +
 	"\x1dGetCheckoutReservationRequest\x12\x17\n" +

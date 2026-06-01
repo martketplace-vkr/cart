@@ -32,6 +32,10 @@ message CheckoutCartItem {
   uint32 quantity = 6;
   string unit_price = 7;
   string total_price = 8;
+  int64 currency_id = 9;
+  string rub_price = 10;
+  string usdt_price = 11;
+  string rub_per_usdt = 12;
 }
 
 message CheckoutCartTotals {
@@ -46,6 +50,7 @@ message ReserveCheckoutItemsRequest {
   string checkout_id = 2;
   repeated int64 product_ids = 3;
   uint64 expected_cart_version = 4;
+  int64 preferred_currency_id = 5;
 }
 
 message ReserveCheckoutItemsResponse {

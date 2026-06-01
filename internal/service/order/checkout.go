@@ -33,6 +33,7 @@ func (s *service) ReserveCheckoutItems(
 		request.GetCheckoutId(),
 		request.GetProductIds(),
 		request.GetExpectedCartVersion(),
+		request.GetPreferredCurrencyId(),
 	)
 	if err != nil {
 		return nil, err

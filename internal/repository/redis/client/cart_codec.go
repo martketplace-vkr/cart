@@ -81,8 +81,13 @@ func protoCartToDomain(cart *clientapi.Cart) (*domain.Cart, error) {
 			AvailableQuantity: item.GetAvailableQuantity(),
 			Available:         item.GetAvailable(),
 			Selected:          item.GetSelected(),
+			CurrencyID:        item.GetCurrencyId(),
 			UnitPrice:         decimalFromString(item.GetUnitPrice()),
 			TotalPrice:        decimalFromString(item.GetTotalPrice()),
+			RubPrice:          decimalFromString(item.GetRubPrice()),
+			USDTPrice:         decimalFromString(item.GetUsdtPrice()),
+			RubPerUSDT:        decimalFromString(item.GetRubPerUsdt()),
+			AcceptsCrypto:     item.GetAcceptsCrypto(),
 		})
 	}
 

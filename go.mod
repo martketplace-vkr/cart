@@ -59,7 +59,7 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/martketplace-vkr/catalog v1.0.0-rc004 // indirect
+	github.com/martketplace-vkr/catalog v1.0.0-rc005.0.20260601084541-2e27ff7e2462 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect

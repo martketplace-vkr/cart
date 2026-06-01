@@ -35,6 +35,11 @@ message CartItem {
   bool selected = 9;
   string unit_price = 10;
   string total_price = 11;
+  int64 currency_id = 12;
+  string rub_price = 13;
+  string usdt_price = 14;
+  string rub_per_usdt = 15;
+  bool accepts_crypto = 16;
 }
 
 message CartTotals {
